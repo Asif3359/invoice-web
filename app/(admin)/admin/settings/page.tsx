@@ -5,22 +5,24 @@ import { ErrorState } from "@/components/admin/ErrorState";
 import { Loading } from "@/components/admin/Loading";
 import { api } from "@/lib/api-client";
 
+// ─── Extract the nested type ────────────────────────────────────────────────
+type AppSettings = {
+  appName: string;
+  allowNewRegistrations: boolean;
+  maintenanceMode: boolean;
+  maxSubUsersPerBusiness: number;
+  supportEmail: string;
+};
+
 type SettingsResponse = {
   success: boolean;
   data?: {
-    settings: {
-      appName: string;
-      allowNewRegistrations: boolean;
-      maintenanceMode: boolean;
-      maxSubUsersPerBusiness: number;
-      supportEmail: string;
-    };
+    settings: AppSettings;
   };
 };
 
 export default function SettingsPage() {
-  const [settings, setSettings] =
-    useState<SettingsResponse["data"]["settings"] | null>(null);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,4 +84,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

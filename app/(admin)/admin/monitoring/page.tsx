@@ -5,21 +5,23 @@ import { ErrorState } from "@/components/admin/ErrorState";
 import { Loading } from "@/components/admin/Loading";
 import { api } from "@/lib/api-client";
 
+// ─── Extract the nested type ────────────────────────────────────────────────
+type ActiveSessions = {
+  system: number;
+  businessUsers: number;
+  subUsers: number;
+  total: number;
+};
+
 type MonitoringSessionsResponse = {
   success: boolean;
   data?: {
-    activeSessions: {
-      system: number;
-      businessUsers: number;
-      subUsers: number;
-      total: number;
-    };
+    activeSessions: ActiveSessions;
   };
 };
 
 export default function MonitoringPage() {
-  const [sessions, setSessions] =
-    useState<MonitoringSessionsResponse["data"]["activeSessions"] | null>(null);
+  const [sessions, setSessions] = useState<ActiveSessions | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,4 +91,3 @@ export default function MonitoringPage() {
     </div>
   );
 }
-
