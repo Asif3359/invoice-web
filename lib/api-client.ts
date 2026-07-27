@@ -9,13 +9,9 @@ api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = window.localStorage.getItem("admin_token");
     if (token) {
-      // eslint-disable-next-line no-param-reassign
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
-      };
+      // ✅ Use `set` method to avoid type issues with AxiosHeaders
+      config.headers.set("Authorization", `Bearer ${token}`);
     }
   }
   return config;
 });
-
