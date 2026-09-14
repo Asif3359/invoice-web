@@ -10,6 +10,7 @@ const links = [
   { href: "/admin/sub-users", label: "Business Users" },
   { href: "/admin/permissions", label: "Permissions" },
   { href: "/admin/monitoring", label: "Monitoring" },
+  { href: "/admin/video-tutorials", label: "Video Tutorials" },
   { href: "/admin/settings", label: "Settings" },
 ];
 
@@ -47,4 +48,3 @@ export function Sidebar() {
     </aside>
   );
 }
-
