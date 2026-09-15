@@ -57,7 +57,7 @@ export default function BusinessUsersPage() {
     async function load() {
       try {
         const res = await api.get<BusinessUsersResponse>(
-          "/api/admin/business-users",
+          "/admin/business-users",
           {
             params: { page: 1, limit: 20 },
           },
@@ -76,7 +76,7 @@ export default function BusinessUsersPage() {
           })),
         );
       } catch {
-        setError("Unable to load business users from /api/admin/business-users.");
+        setError("Unable to load business users from /admin/business-users.");
       } finally {
         setLoading(false);
       }
@@ -137,7 +137,7 @@ export default function BusinessUsersPage() {
       }
 
       await api.patch(
-        `/api/admin/business-users/${editingUser.id}/status`,
+        `/admin/business-users/${editingUser.id}/status`,
         payload,
       );
 
@@ -148,12 +148,14 @@ export default function BusinessUsersPage() {
                 ? {
                     ...u,
                     isActive: formIsActive,
-                    activeFrom: formIsActive && formActiveFrom
-                      ? new Date(formActiveFrom).toISOString()
-                      : null,
-                    activeUntil: formIsActive && formActiveUntil
-                      ? new Date(formActiveUntil).toISOString()
-                      : null,
+                    activeFrom:
+                      formIsActive && formActiveFrom
+                        ? new Date(formActiveFrom).toISOString()
+                        : null,
+                    activeUntil:
+                      formIsActive && formActiveUntil
+                        ? new Date(formActiveUntil).toISOString()
+                        : null,
                   }
                 : u,
             )
@@ -313,4 +315,3 @@ export default function BusinessUsersPage() {
     </div>
   );
 }
-
