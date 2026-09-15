@@ -1,6 +1,6 @@
 ## System Admin API Documentation
 
-Base URL: `http://localhost:3000/api/admin`
+Base URL: `http://localhost:3000/admin`
 
 All protected endpoints require:
 

@@ -29,10 +29,10 @@ export default function SettingsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await api.get<SettingsResponse>("/api/admin/settings");
+        const res = await api.get<SettingsResponse>("/admin/settings");
         setSettings(res.data.data?.settings ?? null);
       } catch {
-        setError("Unable to load system settings from /api/admin/settings.");
+        setError("Unable to load system settings from /admin/settings.");
       } finally {
         setLoading(false);
       }

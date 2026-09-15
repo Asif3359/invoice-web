@@ -30,13 +30,11 @@ export default function AdminOverviewPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await api.get<OverviewResponse>(
-          "/api/admin/metrics/overview",
-        );
+        const res = await api.get<OverviewResponse>("/admin/metrics/overview");
         setStatsData(res.data.data?.stats ?? null);
       } catch {
         setError(
-          "Unable to load overview metrics from /api/admin/metrics/overview.",
+          "Unable to load overview metrics from /admin/metrics/overview.",
         );
       } finally {
         setLoading(false);

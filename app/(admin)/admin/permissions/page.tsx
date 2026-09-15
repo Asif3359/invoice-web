@@ -48,12 +48,9 @@ export default function PermissionsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await api.get<PermissionsResponse>(
-          "/api/admin/permissions",
-          {
-            params: { page: 1, limit: 20 },
-          },
-        );
+        const res = await api.get<PermissionsResponse>("/admin/permissions", {
+          params: { page: 1, limit: 20 },
+        });
         const subUsers = res.data.data?.subUsers ?? [];
         setRows(
           subUsers.map((su) => ({
@@ -67,7 +64,7 @@ export default function PermissionsPage() {
         );
       } catch {
         setError(
-          "Unable to load sub-user permissions from /api/admin/permissions.",
+          "Unable to load sub-user permissions from /admin/permissions.",
         );
       } finally {
         setLoading(false);
@@ -107,4 +104,3 @@ export default function PermissionsPage() {
     </div>
   );
 }
-

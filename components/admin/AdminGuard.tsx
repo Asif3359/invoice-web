@@ -63,7 +63,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
           };
         };
 
-        const { data } = await api.get<MeResponse>("/api/admin/me");
+        const { data } = await api.get<MeResponse>("/admin/me");
         const apiUser = data.data?.user;
 
         if (!apiUser) {
@@ -107,9 +107,6 @@ export function AdminGuard({ children }: AdminGuardProps) {
   }
 
   return (
-    <AdminContext.Provider value={{ user }}>
-      {children}
-    </AdminContext.Provider>
+    <AdminContext.Provider value={{ user }}>{children}</AdminContext.Provider>
   );
 }
-

@@ -38,9 +38,7 @@ export default function SystemUsersPage() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await api.get<SystemAdminsResponse>(
-          "/api/admin/system-admins",
-        );
+        const res = await api.get<SystemAdminsResponse>("/admin/system-admins");
         const admins = res.data.data?.admins ?? [];
         setUsers(
           admins.map((admin) => ({
@@ -53,7 +51,7 @@ export default function SystemUsersPage() {
           })),
         );
       } catch {
-        setError("Unable to load system admins from /api/admin/system-admins.");
+        setError("Unable to load system admins from /admin/system-admins.");
       } finally {
         setLoading(false);
       }
@@ -89,4 +87,3 @@ export default function SystemUsersPage() {
     </div>
   );
 }
-

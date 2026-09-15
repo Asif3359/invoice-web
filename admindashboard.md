@@ -80,18 +80,18 @@ components/
 Adjust these to match your actual routes, but aim for:
 
 - **Auth**
-  - `POST /api/admin/auth/login` – admin/manager login, returns `{ token, user }`
+  - `POST /admin/auth/login` – admin/manager login, returns `{ token, user }`
 - **Admin Users**
-  - `GET /api/admin/users` – list system users (admins/managers)
-  - `POST /api/admin/users` – create system user
-  - `PATCH /api/admin/users/:id` – update role / status
-  - `DELETE /api/admin/users/:id` – soft delete / deactivate
+  - `GET /admin/users` – list system users (admins/managers)
+  - `POST /admin/users` – create system user
+  - `PATCH /admin/users/:id` – update role / status
+  - `DELETE /admin/users/:id` – soft delete / deactivate
 - **Monitoring / Analytics**
-  - `GET /api/admin/metrics/overview`
-  - `GET /api/admin/logs` (optional, paginated)
+  - `GET /admin/metrics/overview`
+  - `GET /admin/logs` (optional, paginated)
 - **Tenants / Businesses** (if multi‑tenant)
-  - `GET /api/admin/tenants`
-  - `PATCH /api/admin/tenants/:id/status`
+  - `GET /admin/tenants`
+  - `PATCH /admin/tenants/:id/status`
 
 **Token payload (example)**:
 
@@ -149,7 +149,7 @@ export interface AdminUser {
 export function hasPermission(
   user: AdminUser | null | undefined,
   resource: string,
-  action: string
+  action: string,
 ): boolean {
   if (!user) return false;
   if (user.role === "admin") return true; // full access for system admin
@@ -157,7 +157,7 @@ export function hasPermission(
 }
 ```
 
-You can fetch the authenticated admin user via a `/api/admin/me` endpoint after login.
+You can fetch the authenticated admin user via a `/admin/me` endpoint after login.
 
 ---
 
@@ -200,7 +200,11 @@ import { getCurrentAdminUser } from "@/lib/server-auth"; // implement with cooki
 import { Sidebar } from "@/components/admin/Sidebar";
 import { Topbar } from "@/components/admin/Topbar";
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const adminUser = await getCurrentAdminUser();
   if (!adminUser) redirect("/admin-login");
 
@@ -241,7 +245,7 @@ export default function AdminLoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const { data } = await api.post("/api/admin/auth/login", { email, password });
+      const { data } = await api.post("/admin/auth/login", { email, password });
       window.localStorage.setItem("admin_token", data.token);
       router.push("/admin");
     } catch (err: any) {
@@ -257,7 +261,9 @@ export default function AdminLoginPage() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-xl bg-slate-900 p-6 shadow-xl"
       >
-        <h1 className="mb-4 text-xl font-semibold text-slate-50">System Admin Login</h1>
+        <h1 className="mb-4 text-xl font-semibold text-slate-50">
+          System Admin Login
+        </h1>
         <label className="mb-2 block text-sm text-slate-300">
           Email
           <input
@@ -363,7 +369,7 @@ Show high‑level metrics and system health:
 - Today’s invoices, payments, revenue.
 - Error rate, failed jobs, email failures.
 
-Fetch from `GET /api/admin/metrics/overview` and display in cards and charts.
+Fetch from `GET /admin/metrics/overview` and display in cards and charts.
 
 #### 8.2 System Users Management (`/admin/users`)
 
@@ -401,7 +407,7 @@ Typical widgets:
 - Email queue / SMS queue status.
 - Background jobs (success vs failure).
 
-Backed by `GET /api/admin/logs`, `GET /api/admin/metrics/overview`, etc.
+Backed by `GET /admin/logs`, `GET /admin/metrics/overview`, etc.
 
 ---
 
@@ -453,4 +459,3 @@ In the frontend, centralize checks using `hasPermission` so you can:
 - Add integration tests for critical admin flows (login, user creation, permission changes).
 
 Use this document as your main reference while building the **system admin dashboard** in Next.js.
-

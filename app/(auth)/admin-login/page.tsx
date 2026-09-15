@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
     setSuccessMessage(null);
     setLoading(true);
     try {
-      const { data } = await api.post<LoginResponse>("/api/admin/auth/login", {
+      const { data } = await api.post<LoginResponse>("/admin/auth/login", {
         email,
         password,
       });
@@ -78,10 +78,13 @@ export default function AdminLoginPage() {
     setSuccessMessage(null);
     setLoading(true);
     try {
-      const { data } = await api.post<VerifyOtpResponse>("/api/admin/auth/verify-otp", {
-        email: verifiedEmail,
-        otp,
-      });
+      const { data } = await api.post<VerifyOtpResponse>(
+        "/admin/auth/verify-otp",
+        {
+          email: verifiedEmail,
+          otp,
+        },
+      );
 
       if (!data.success || !data.data?.tokens) {
         throw new Error(data.message || "OTP verification failed");
@@ -94,7 +97,9 @@ export default function AdminLoginPage() {
       router.push("/admin");
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "OTP verification failed. Please try again.";
+        err instanceof Error
+          ? err.message
+          : "OTP verification failed. Please try again.";
       setError(message);
     } finally {
       setLoading(false);
@@ -106,7 +111,7 @@ export default function AdminLoginPage() {
     setSuccessMessage(null);
     setLoading(true);
     try {
-      const { data } = await api.post("/api/admin/auth/resend-otp", {
+      const { data } = await api.post("/admin/auth/resend-otp", {
         email: verifiedEmail,
       });
       setSuccessMessage(data.message || "A new OTP has been sent.");

@@ -29,12 +29,12 @@ export default function MonitoringPage() {
     async function load() {
       try {
         const res = await api.get<MonitoringSessionsResponse>(
-          "/api/admin/monitoring/sessions",
+          "/admin/monitoring/sessions",
         );
         setSessions(res.data.data?.activeSessions ?? null);
       } catch {
         setError(
-          "Unable to load monitoring data from /api/admin/monitoring/sessions.",
+          "Unable to load monitoring data from /admin/monitoring/sessions.",
         );
       } finally {
         setLoading(false);

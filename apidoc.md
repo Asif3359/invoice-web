@@ -82,18 +82,18 @@ Authentication for protected routes is done via:
 
 ---
 
-### 4. Admin (`/api/admin`)
+### 4. Admin (`/admin`)
 
-- **POST** `/api/admin/auth/login`
+- **POST** `/admin/auth/login`
   - System admin / manager login (reuses main login logic).
   - Body: `{ email, password, userType?: "main" | "sub" }`
 
-- **GET** `/api/admin/me`
+- **GET** `/admin/me`
   - Get current admin user (for admin dashboard).
   - Requires `Authorization` header.
   - Returns fields like: `{ id, email, fullName, role, permissions }`.
 
-- **GET** `/api/admin/metrics/overview`
+- **GET** `/admin/metrics/overview`
   - High-level system metrics for dashboard.
   - Requires `Authorization` header.
   - Returns counts: `totalUsers`, `totalSubUsers`, `totalInvoices`, `totalPayments`, `totalExpenses`.
@@ -440,4 +440,3 @@ Authentication for protected routes is done via:
 
 - **POST** `/cash-registers/sync`
   - Sync cash registers.
-
