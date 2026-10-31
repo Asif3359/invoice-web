@@ -134,6 +134,22 @@ export function LoginForm() {
     return () => clearTimeout(timer);
   }, [resendCooldown]);
 
+  // Password reset/change flows redirect here with a notice.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const notice = new URLSearchParams(window.location.search).get("notice");
+    if (notice === "password-changed") {
+      setSuccessMessage(
+        "Password changed successfully. Please sign in with your new password.",
+      );
+    } else if (notice === "password-reset") {
+      setSuccessMessage(
+        "Password reset successfully. Please sign in with your new password.",
+      );
+    }
+  }, []);
+
   async function handleCredentialsSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
@@ -398,10 +414,10 @@ export function LoginForm() {
                         Password
                       </label>
                       <Link
-                        href="/contact"
+                        href="/forgot-password"
                         className="text-xs text-slate-500 transition hover:text-emerald-400"
                       >
-                        Need help?
+                        Forgot password?
                       </Link>
                     </div>
                     <div className="relative">

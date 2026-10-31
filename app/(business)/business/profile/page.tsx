@@ -1,6 +1,12 @@
 "use client";
 
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 import { useBusinessUser } from "@/components/business/BusinessGuard";
+import { PaymentHistory } from "@/components/business/PaymentHistory";
+import { businessApi } from "@/lib/business-api";
+import { clearSession } from "@/lib/session";
 import type { SubscriptionStatus } from "@/lib/business-auth";
 
 const statusStyles: Record<SubscriptionStatus, string> = {
@@ -24,9 +30,58 @@ function formatStatus(status?: SubscriptionStatus) {
   return status.replace("_", " ");
 }
 
+function getErrorMessage(err: unknown, fallback: string) {
+  if (axios.isAxiosError(err)) {
+    const message = (err.response?.data as { message?: string } | undefined)
+      ?.message;
+    if (message) return message;
+  }
+  return err instanceof Error ? err.message : fallback;
+}
+
+const inputClassName =
+  "mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25";
+
 export default function BusinessProfilePage() {
+  const router = useRouter();
   const { user, subscription } = useBusinessUser();
   const status = subscription?.status;
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  async function handleChangePassword(event: FormEvent) {
+    event.preventDefault();
+    setPasswordError(null);
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New password and confirmation do not match.");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      await businessApi.post("/auth/change-password", {
+        currentPassword,
+        newPassword,
+      });
+      clearSession("business");
+      router.replace("/login?notice=password-changed");
+    } catch (err) {
+      setPasswordError(
+        getErrorMessage(
+          err,
+          "Could not change your password. Please try again.",
+        ),
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const details = [
     { label: "Full name", value: user.fullName || "Not provided" },
@@ -112,22 +167,79 @@ export default function BusinessProfilePage() {
         </div>
       </section>
 
+      <PaymentHistory />
+
       <section className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
         <h2 className="text-lg font-semibold text-slate-100">
-          Security &amp; preferences
+          Account security
         </h2>
         <p className="mt-2 text-sm text-slate-400">
-          Password changes and business profile editing will be available in the
-          next version. Contact support if you need to update your account
-          details now.
+          Change your password below. For your security you will be signed out
+          and asked to sign in again.
         </p>
-        <button
-          type="button"
-          disabled
-          className="mt-4 cursor-not-allowed rounded-md border border-slate-700 px-3 py-2 text-sm font-medium text-slate-500"
+
+        {passwordError && (
+          <p
+            role="alert"
+            className="mt-3 rounded-md border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
+          >
+            {passwordError}
+          </p>
+        )}
+
+        <form
+          onSubmit={handleChangePassword}
+          className="mt-4 grid gap-4 sm:grid-cols-3"
         >
-          Change password (coming soon)
-        </button>
+          <label className="text-sm text-slate-300">
+            Current password
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              required
+              className={inputClassName}
+            />
+          </label>
+          <label className="text-sm text-slate-300">
+            New password
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              minLength={8}
+              required
+              className={inputClassName}
+            />
+          </label>
+          <label className="text-sm text-slate-300">
+            Confirm new password
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              minLength={8}
+              required
+              className={inputClassName}
+            />
+          </label>
+          <div className="sm:col-span-3">
+            <p className="text-xs text-slate-500">
+              At least 8 characters with an uppercase letter, a lowercase letter
+              and a number.
+            </p>
+            <button
+              type="submit"
+              disabled={saving}
+              className="mt-3 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving ? "Changing password..." : "Change password"}
+            </button>
+          </div>
+        </form>
       </section>
     </div>
   );

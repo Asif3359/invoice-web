@@ -41,6 +41,48 @@ type BusinessUsersResponse = {
   };
 };
 
+interface AdminPayment {
+  _id: string;
+  tranId: string;
+  amount: number;
+  currency: string;
+  status: string;
+  planSnapshot?: { name?: string; durationDays?: number };
+  paidAt?: string | null;
+  periodFrom?: string | null;
+  periodTo?: string | null;
+  createdAt: string;
+}
+
+type BusinessPaymentsResponse = {
+  success: boolean;
+  data?: {
+    payments: AdminPayment[];
+  };
+};
+
+const paymentStatusStyles: Record<string, string> = {
+  pending: "bg-amber-500/10 text-amber-300",
+  paid: "bg-emerald-500/10 text-emerald-300",
+  failed: "bg-rose-500/10 text-rose-300",
+  cancelled: "bg-slate-700/40 text-slate-300",
+  review: "bg-sky-500/10 text-sky-300",
+};
+
+function formatPaymentDate(value?: string | null) {
+  if (!value) return "—";
+  return new Date(value).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatPaymentAmount(amount: number, currency: string) {
+  const value = Number(amount ?? 0).toLocaleString("en-BD");
+  return currency === "BDT" ? `৳${value}` : `${currency} ${value}`;
+}
+
 export default function BusinessUsersPage() {
   const adminUser = useAdminUser();
   const [users, setUsers] = useState<BusinessUserRow[] | null>(null);
@@ -52,6 +94,10 @@ export default function BusinessUsersPage() {
   const [formActiveFrom, setFormActiveFrom] = useState<string>("");
   const [formActiveUntil, setFormActiveUntil] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [paymentUser, setPaymentUser] = useState<BusinessUserRow | null>(null);
+  const [payments, setPayments] = useState<AdminPayment[] | null>(null);
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
+  const [paymentsError, setPaymentsError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -179,6 +225,32 @@ export default function BusinessUsersPage() {
     setEditingUser(null);
   }
 
+  async function openPayments(row: BusinessUserRow) {
+    setPaymentUser(row);
+    setPayments(null);
+    setPaymentsError(null);
+    setPaymentsLoading(true);
+
+    try {
+      const res = await api.get<BusinessPaymentsResponse>(
+        `/admin/business-users/${row.id}/payments`,
+      );
+      setPayments(res.data.data?.payments ?? []);
+    } catch {
+      setPaymentsError(
+        "Unable to load this user's payment history. Please try again.",
+      );
+    } finally {
+      setPaymentsLoading(false);
+    }
+  }
+
+  function closePayments() {
+    setPaymentUser(null);
+    setPayments(null);
+    setPaymentsError(null);
+  }
+
   if (loading) {
     return <Loading />;
   }
@@ -261,6 +333,116 @@ export default function BusinessUsersPage() {
           </div>
         </div>
       )}
+      {paymentUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="w-full max-w-3xl rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-50">
+                  Payment history
+                </h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  {paymentUser.fullName} ({paymentUser.email})
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closePayments}
+                className="rounded-md border border-slate-700 px-2 py-1 text-[11px] text-slate-300 hover:bg-slate-800"
+              >
+                Close
+              </button>
+            </div>
+
+            {paymentsLoading && (
+              <p className="mt-4 text-sm text-slate-400">
+                Loading payments...
+              </p>
+            )}
+
+            {paymentsError && (
+              <p className="mt-4 text-sm text-rose-300">{paymentsError}</p>
+            )}
+
+            {!paymentsLoading && !paymentsError && payments?.length === 0 && (
+              <p className="mt-4 text-sm text-slate-400">
+                This user has no subscription payments yet.
+              </p>
+            )}
+
+            {!paymentsLoading &&
+              !paymentsError &&
+              payments &&
+              payments.length > 0 && (
+                <div className="mt-4 max-h-[60vh] overflow-auto rounded-lg border border-slate-800">
+                  <table className="min-w-full divide-y divide-slate-800 text-sm">
+                    <thead className="bg-slate-950/80">
+                      <tr>
+                        {[
+                          "Date",
+                          "Plan",
+                          "Amount",
+                          "Status",
+                          "Period",
+                          "Transaction",
+                        ].map((header) => (
+                          <th
+                            key={header}
+                            className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-slate-500"
+                          >
+                            {header}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {payments.map((payment) => (
+                        <tr key={payment._id}>
+                          <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-200">
+                            {formatPaymentDate(
+                              payment.paidAt ?? payment.createdAt,
+                            )}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-100">
+                            {payment.planSnapshot?.name ?? "—"}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-2 text-xs font-medium text-slate-50">
+                            {formatPaymentAmount(
+                              payment.amount,
+                              payment.currency,
+                            )}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-2">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${
+                                paymentStatusStyles[payment.status] ??
+                                "bg-slate-800 text-slate-300"
+                              }`}
+                            >
+                              {payment.status}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-400">
+                            {payment.periodFrom && payment.periodTo
+                              ? `${formatPaymentDate(
+                                  payment.periodFrom,
+                                )} – ${formatPaymentDate(payment.periodTo)}`
+                              : "—"}
+                          </td>
+                          <td className="whitespace-nowrap px-3 py-2">
+                            <span className="font-mono text-[10px] text-slate-400">
+                              {payment.tranId}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+          </div>
+        </div>
+      )}
       <Table
         columns={[
           { key: "email", header: "Email" },
@@ -292,19 +474,28 @@ export default function BusinessUsersPage() {
                   : "";
 
               return (
-                <button
-                  type="button"
-                  title={title}
-                  disabled={disabled}
-                  onClick={() => openEditModal(row)}
-                  className={`rounded-md px-2 py-1 text-[11px] font-medium ${
-                    disabled
-                      ? "cursor-not-allowed border border-slate-800 text-slate-500"
-                      : "border border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800"
-                  }`}
-                >
-                  Edit
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openPayments(row)}
+                    className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-[11px] font-medium text-slate-100 hover:bg-slate-800"
+                  >
+                    Payments
+                  </button>
+                  <button
+                    type="button"
+                    title={title}
+                    disabled={disabled}
+                    onClick={() => openEditModal(row)}
+                    className={`rounded-md px-2 py-1 text-[11px] font-medium ${
+                      disabled
+                        ? "cursor-not-allowed border border-slate-800 text-slate-500"
+                        : "border border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800"
+                    }`}
+                  >
+                    Edit
+                  </button>
+                </div>
               );
             },
           },

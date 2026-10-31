@@ -37,6 +37,20 @@ export interface PaymentStatusResponse {
   subscription?: BusinessSubscription | null;
 }
 
+export interface PaymentRecord {
+  _id: string;
+  tranId: string;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  planSnapshot?: { code?: string; name?: string; durationDays?: number };
+  paidAt?: string | null;
+  periodFrom?: string | null;
+  periodTo?: string | null;
+  createdAt: string;
+  failureReason?: string;
+}
+
 const PENDING_KEY = "business_pending_payment";
 const PENDING_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
@@ -64,6 +78,17 @@ export async function fetchPlans(): Promise<{
     plans: (data?.data?.plans ?? []) as Plan[],
     subscription: (data?.data?.subscription ?? null) as BusinessSubscription | null,
   };
+}
+
+/** Public plan list for the marketing pricing page (no login required). */
+export async function fetchPublicPlans(): Promise<Plan[]> {
+  const { data } = await businessApi.get("/subscription/plans/public");
+  return (data?.data?.plans ?? []) as Plan[];
+}
+
+export async function fetchMyPayments(): Promise<PaymentRecord[]> {
+  const { data } = await businessApi.get("/subscription/payments");
+  return (data?.data?.payments ?? []) as PaymentRecord[];
 }
 
 export async function createCheckout(planId: string): Promise<CheckoutResponse> {

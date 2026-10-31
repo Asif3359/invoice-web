@@ -8,6 +8,7 @@ import { useBusinessUser } from "./BusinessGuard";
 const links = [
   { href: "/business", label: "Dashboard" },
   { href: "/business/subscription", label: "Subscription" },
+  { href: "/business/payments", label: "Payment History" },
   { href: "/business/profile", label: "Profile" },
 ];
 
