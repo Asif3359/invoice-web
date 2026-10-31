@@ -10,6 +10,11 @@ import {
 import { useRouter } from "next/navigation";
 import type { AdminRole, AdminUser } from "@/lib/auth";
 import { api } from "@/lib/api-client";
+import {
+  clearSession,
+  getStoredSession,
+  updateSessionUser,
+} from "@/lib/session";
 import { Loading } from "./Loading";
 import { ErrorState } from "./ErrorState";
 
@@ -39,13 +44,10 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
   useEffect(() => {
     async function loadUser() {
-      const token =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem("admin_token")
-          : null;
+      const session = getStoredSession();
 
-      if (!token) {
-        router.replace("/admin-login");
+      if (!session || session.kind !== "admin") {
+        router.replace("/login");
         return;
       }
 
@@ -79,6 +81,11 @@ export function AdminGuard({ children }: AdminGuardProps) {
         };
 
         setUser(mappedUser);
+        updateSessionUser("admin", {
+          fullName: apiUser.fullName,
+          email: apiUser.email,
+          role: apiUser.role,
+        });
       } catch {
         setError("Unable to load admin session. Please log in again.");
       } finally {
@@ -91,10 +98,8 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
   useEffect(() => {
     if (!loading && (error || !user)) {
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem("admin_token");
-      }
-      router.replace("/admin-login");
+      clearSession("admin");
+      router.replace("/login");
     }
   }, [loading, error, user, router]);
 

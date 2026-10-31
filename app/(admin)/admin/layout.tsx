@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AdminGuard } from "@/components/admin/AdminGuard";
+import { AdminRoleGate } from "@/components/admin/AdminRoleGate";
 import { Sidebar } from "@/components/admin/Sidebar";
 import { Topbar } from "@/components/admin/Topbar";
 
@@ -10,7 +11,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <Sidebar />
         <div className="flex flex-1 flex-col">
           <Topbar />
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6">
+            <AdminRoleGate>{children}</AdminRoleGate>
+          </main>
         </div>
       </div>
     </AdminGuard>

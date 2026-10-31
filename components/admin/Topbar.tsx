@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { clearSession } from "@/lib/session";
 import { useAdminUser } from "./AdminGuard";
 
 export function Topbar() {
@@ -9,10 +10,8 @@ export function Topbar() {
   const displayRole = (user.role ?? "admin").toUpperCase();
 
   function handleLogout() {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("admin_token");
-    }
-    router.push("/admin-login");
+    clearSession("admin");
+    router.push("/login");
   }
 
   return (

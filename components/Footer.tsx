@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950/60">
@@ -44,10 +46,20 @@ export function Footer() {
                 <a href="#" className="hover:text-slate-200">Help Center</a>
               </li>
               <li>
-                <a href="#" className="hover:text-slate-200">Privacy Policy</a>
+                <Link
+                  href="/data-security-policy"
+                  className="hover:text-slate-200"
+                >
+                  Data Security Policy
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-slate-200">Terms of Service</a>
+                <Link
+                  href="/return-refund-policy"
+                  className="hover:text-slate-200"
+                >
+                  Return &amp; Refund Policy
+                </Link>
               </li>
             </ul>
           </div>
