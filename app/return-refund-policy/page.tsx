@@ -8,7 +8,7 @@ import {
 export const metadata: Metadata = {
   title: "Return & Refund Policy | Invoice SaaS",
   description:
-    "Billing, renewal, cancellation, and refund terms for Invoice SaaS subscriptions paid online through SSLCommerz.",
+    "Billing, renewal, cancellation, and refund terms for Invoice SaaS subscriptions paid online through EPS.",
 };
 
 const UPDATED_AT = "October 31, 2026";
@@ -61,9 +61,9 @@ export default function ReturnRefundPolicyPage() {
       <PolicySection title="4. Payment Method and Activation">
         <p>
           Subscriptions are paid online through our payment gateway partner,
-          SSLCommerz. To pay, sign in to your business account, open the
+          EPS (Easy Payment System). To pay, sign in to your business account, open the
           Subscription page, choose a plan, and complete the secure checkout
-          page. SSLCommerz accepts bKash, Nagad, cards, and bank payments.
+          page. EPS accepts bKash, Nagad, cards, and bank payments.
         </p>
         <PolicyList
           items={[
@@ -76,7 +76,7 @@ export default function ReturnRefundPolicyPage() {
         <p>
           We never ask for your bKash PIN, one-time password (OTP), card
           password, or account password. Payment credentials are entered only on
-          the SSLCommerz checkout page, never in a message, email, or phone call.
+          the EPS checkout page, never in a message, email, or phone call.
           If anyone asks you for those details while claiming to represent us, do
           not share them and report it to us.
         </p>
@@ -180,7 +180,7 @@ export default function ReturnRefundPolicyPage() {
       <PolicySection title="11. Processing Time">
         <p>
           We aim to review refund requests within five (5) business days. If a
-          refund is approved, we process it through SSLCommerz back to the
+          refund is approved, we process it through EPS back to the
           original payment method used at checkout, unless we agree on another
           method. Depending on your payment provider or bank, the refund may take
           five to ten (5–10) business days or longer to appear.
@@ -192,7 +192,7 @@ export default function ReturnRefundPolicyPage() {
           If you believe a payment is wrong, please contact us first so we can
           investigate and, where appropriate, refund it directly. If you raise a
           dispute with your payment provider or bank instead, we will cooperate
-          with the provider and SSLCommerz and provide the relevant transaction
+          with the provider and EPS and provide the relevant transaction
           records. While a dispute is under review we may temporarily restrict
           the affected subscription, and we will restore it if the payment is
           confirmed as valid.

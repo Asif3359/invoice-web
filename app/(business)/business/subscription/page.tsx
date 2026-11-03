@@ -169,7 +169,7 @@ export default function BusinessSubscriptionPage() {
   }, []);
 
   // A payment may have been started before a reload or with the gateway tab
-  // closed. Ask the server for the real status (it validates with SSLCommerz).
+  // closed. Ask the server for the real status (it validates with EPS).
   useEffect(() => {
     if (resumeAttempted.current) return;
     resumeAttempted.current = true;
@@ -220,7 +220,7 @@ export default function BusinessSubscriptionPage() {
 
       const popup = window.open(
         checkout.paymentUrl,
-        "sslcommerz_payment",
+        "eps_payment",
         "width=520,height=760",
       );
 
@@ -425,7 +425,7 @@ export default function BusinessSubscriptionPage() {
           Choose a plan
         </h2>
         <p className="mt-1 text-sm text-slate-400">
-          Pay securely with bKash, Nagad, card, or bank through SSLCommerz. If
+          Pay securely with bKash, Nagad, card, or bank through EPS. If
           you pay before your current period ends, the new days are added after
           your current end date.
         </p>
@@ -520,7 +520,7 @@ export default function BusinessSubscriptionPage() {
         )}
 
         <p className="mt-3 text-xs leading-5 text-slate-500">
-          The secure SSLCommerz page opens in a new tab. Keep this tab open —
+          The secure EPS page opens in a new tab. Keep this tab open —
           we confirm the payment with our server automatically. If the tab
           closes early, press &quot;Check activation status&quot; above after
           paying.

@@ -64,7 +64,7 @@ export default function DataSecurityPolicyPage() {
       <PolicySection title="4. Payment Information">
         <p>
           Subscription payments are processed online by our payment gateway
-          partner, SSLCommerz. We receive the plan selected, the amount and
+          partner, EPS (Easy Payment System). We receive the plan selected, the amount and
           currency charged, the payment status, and a transaction reference. That
           information is used only to activate or extend your subscription, to
           keep your billing history, and to handle refunds and disputes.
@@ -72,7 +72,7 @@ export default function DataSecurityPolicyPage() {
         <PolicyList
           items={[
             "We never ask for your bKash PIN, one-time password (OTP), card password, or the password to your payment account. Anyone who asks you for those is not us.",
-            "Card numbers, mobile-wallet credentials, and bank login details are entered only on the SSLCommerz hosted checkout page and are handled by SSLCommerz and the relevant bank or wallet. We do not receive or store them.",
+            "Card numbers, mobile-wallet credentials, and bank login details are entered only on the EPS hosted checkout page and are handled by EPS and the relevant bank or wallet. We do not receive or store them.",
             "We do not store your full card number or wallet credentials in our systems. Only a gateway transaction reference and the payment result are kept.",
             "Payment references are retained as part of your billing history for accounting, tax, refund, and dispute-resolution purposes.",
           ]}

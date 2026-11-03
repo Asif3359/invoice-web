@@ -52,8 +52,7 @@ export function Header() {
   const displayName =
     session?.user?.fullName || session?.user?.email || "Account";
   const dashboardHref = session?.kind === "admin" ? "/admin" : "/business";
-  const profileHref =
-    session?.kind === "business" ? "/business/profile" : null;
+  const profileHref = session?.kind === "business" ? "/business/profile" : null;
   const roleLabel =
     session?.kind === "admin"
       ? session.user?.role
@@ -67,8 +66,8 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-emerald-500">Invoice</span>
-            <span className="text-xl font-light text-slate-300">SaaS</span>
+            <span className="text-xl font-bold text-emerald-500">Invento</span>
+            <span className="text-xl font-light text-slate-300">manager</span>
           </Link>
 
           {/* Navigation */}

@@ -14,7 +14,7 @@ const features = [
   "Inventory, expenses and reports",
   "Multi-user team access",
   "Payment history and subscription controls",
-  "Secure SSLCommerz checkout",
+  "Secure EPS checkout",
 ];
 
 function formatAmount(amount: number, currency: string) {

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const steps = [
   "Sign in to your business account, or create one if you are new.",
   "Open Subscription and choose the plan that suits you.",
-  "Complete the secure SSLCommerz checkout page.",
+  "Complete the secure EPS checkout page.",
   "Your access continues immediately — no waiting for approval.",
 ];
 
@@ -62,13 +62,14 @@ export default function PricingPage() {
               Secure checkout
             </h2>
             <p className="mt-3">
-              Payments are processed by SSLCommerz. Pay with bKash, Nagad, card,
+              Payments are processed by EPS (Easy Payment System). Pay with
+              bKash, Nagad, card,
               or bank — your subscription is activated automatically as soon as
               the payment is confirmed.
             </p>
             <p className="mt-3">
               We never ask for your bKash PIN, card password, or one-time
-              password. Payment details are entered only on the SSLCommerz
+              password. Payment details are entered only on the EPS
               checkout page.
             </p>
             <p className="mt-3">
