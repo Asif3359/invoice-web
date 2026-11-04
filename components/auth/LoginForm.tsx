@@ -84,10 +84,13 @@ const highlights = [
  * /login?next=/business/subscription from the pricing page). Only paths inside
  * the business area are honoured, so the parameter cannot redirect off-site.
  */
-function getBusinessRedirect() {
-  if (typeof window === "undefined") return "/business";
-  const next = new URLSearchParams(window.location.search).get("next");
+function getBusinessRedirect(search: string) {
+  const next = new URLSearchParams(search).get("next");
   return next && next.startsWith("/business") ? next : "/business";
+}
+
+function currentSearch() {
+  return typeof window === "undefined" ? "" : window.location.search;
 }
 
 function getErrorMessage(err: unknown, fallback: string) {
@@ -116,11 +119,16 @@ export function LoginForm() {
   const [verifiedEmail, setVerifiedEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  const search = currentSearch();
+  const registerHref = search ? `/register${search}` : "/register";
+
   // Already signed in? Skip the login form.
   useEffect(() => {
     if (!session) return;
     router.replace(
-      session.kind === "business" ? getBusinessRedirect() : "/admin",
+      session.kind === "business"
+        ? getBusinessRedirect(currentSearch())
+        : "/admin",
     );
   }, [session, router]);
 
@@ -184,7 +192,7 @@ export function LoginForm() {
 
       if (payload.next === "dashboard" && payload.tokens) {
         storeBusinessSession(payload.tokens, payload.user);
-        router.push(getBusinessRedirect());
+        router.push(getBusinessRedirect(currentSearch()));
         return;
       }
 
@@ -540,13 +548,27 @@ export function LoginForm() {
             </div>
 
             <p className="mt-5 text-center text-xs text-slate-600">
-              New to Invoice SaaS?{" "}
-              <Link
-                href="/pricing"
-                className="font-medium text-slate-400 transition hover:text-emerald-400"
-              >
-                View plans
-              </Link>
+              {step === "credentials" ? (
+                <>
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    href={registerHref}
+                    className="font-medium text-slate-400 transition hover:text-emerald-400"
+                  >
+                    Register your business
+                  </Link>
+                </>
+              ) : (
+                <>
+                  Wrong account?{" "}
+                  <Link
+                    href="/login"
+                    className="font-medium text-slate-400 transition hover:text-emerald-400"
+                  >
+                    Start sign in again
+                  </Link>
+                </>
+              )}
             </p>
           </section>
         </div>

@@ -172,7 +172,7 @@ export function PricingCards() {
             </ul>
 
             <Link
-              href="/login?next=/business/subscription"
+              href="/register?next=/business/subscription"
               className={`mt-6 flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition ${
                 isBest
                   ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-500"
