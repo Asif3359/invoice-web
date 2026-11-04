@@ -1,4 +1,5 @@
 import axios from "axios";
+import { attachRefreshInterceptor } from "./auth-refresh";
 
 /**
  * Base URL for business (main user) endpoints.
@@ -35,4 +36,9 @@ businessApi.interceptors.request.use((config) => {
     }
   }
   return config;
+});
+
+attachRefreshInterceptor(businessApi, {
+  kind: "business",
+  refreshPath: "/auth/refresh-token",
 });

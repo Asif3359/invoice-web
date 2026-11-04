@@ -3,6 +3,7 @@
 import {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -117,13 +118,15 @@ export function BusinessGuard({ children }: { children: ReactNode }) {
   /**
    * Re-read the profile so the subscription status is current after a payment
    * is activated. Used by the subscription page's "Check activation status".
+   * Stable identity, so consumers can keep it in an effect dependency list
+   * without re-running their own requests on every render.
    */
-  async function refreshSubscription() {
+  const refreshSubscription = useCallback(async () => {
     const { data } = await businessApi.get<ProfileResponse>("/auth/profile");
     const next = data.data?.subscription ?? null;
     setSubscription(next);
     return next;
-  }
+  }, []);
 
   useEffect(() => {
     if (!loading && (error || !user)) {

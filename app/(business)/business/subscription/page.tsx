@@ -82,6 +82,27 @@ function paymentStatusMessage(status: PaymentStatus) {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * The gateway tab normally ends on a payment result page, which closes itself.
+ * Close it here only when it is still parked on the bank (or our own older
+ * screens), so no window is left hanging.
+ */
+function closeUnlessResultPage(popup: Window | null) {
+  if (!popup || popup.closed) return;
+
+  try {
+    if (popup.location.pathname.startsWith("/business/payment/")) return;
+  } catch {
+    // Still on the gateway origin: the path cannot be read.
+  }
+
+  try {
+    popup.close();
+  } catch {
+    // The tab may already be closed; nothing to do.
+  }
+}
+
 async function waitForPayment(tranId: string, popup: Window | null) {
   const timeoutAt = Date.now() + 5 * 60 * 1000;
   let last: PaymentStatus = "pending";
@@ -95,11 +116,7 @@ async function waitForPayment(tranId: string, popup: Window | null) {
       last = result.status;
 
       if (TERMINAL_STATUSES.includes(last)) {
-        try {
-          popup?.close();
-        } catch {
-          // The tab may already be closed; nothing to do.
-        }
+        closeUnlessResultPage(popup);
         return last;
       }
     } catch {

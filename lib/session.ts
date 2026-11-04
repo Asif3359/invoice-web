@@ -151,6 +151,26 @@ export function clearSession(kind?: SessionKind) {
   invalidateSessionCache();
 }
 
+/**
+ * Rotates only the access token after a refresh. The refresh token and the
+ * stored user stay as they are, so the session keeps its shape.
+ */
+export function storeAccessToken(kind: SessionKind, accessToken: string) {
+  if (typeof window === "undefined") return;
+
+  const key = kind === "business" ? KEYS.businessToken : KEYS.adminToken;
+  window.localStorage.setItem(key, accessToken);
+  invalidateSessionCache();
+}
+
+export function getRefreshToken(kind: SessionKind): string | null {
+  if (typeof window === "undefined") return null;
+
+  const key =
+    kind === "business" ? KEYS.businessRefreshToken : KEYS.adminRefreshToken;
+  return window.localStorage.getItem(key);
+}
+
 export function getInitials(value?: string | null): string {
   if (!value) return "U";
 
