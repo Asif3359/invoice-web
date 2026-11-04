@@ -15,7 +15,9 @@ import {
   ShieldCheckIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { AuthShell, AuthSplash } from "@/components/auth/AuthShell";
 import { useBusinessUser } from "@/components/business/BusinessGuard";
+import { Button } from "@/components/ui/button";
 import {
   clearPendingPayment,
   fetchPaymentStatus,
@@ -83,30 +85,28 @@ function CopyTranId({ tranId }: { tranId: string }) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2.5">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted px-3 py-2.5">
       <div className="min-w-0">
-        <p className="text-[11px] uppercase tracking-wider text-slate-500">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
           Transaction ID
         </p>
-        <p className="truncate font-mono text-xs text-slate-200">{tranId}</p>
+        <p className="truncate font-mono text-xs text-foreground">{tranId}</p>
       </div>
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="xs"
         onClick={handleCopy}
         aria-label="Copy transaction ID"
-        className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
-          copied
-            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-            : "border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-500 hover:text-slate-100"
-        }`}
+        className="shrink-0 gap-1.5"
       >
         {copied ? (
-          <CheckIcon className="h-3.5 w-3.5" />
+          <CheckIcon className="size-3.5" />
         ) : (
-          <ClipboardDocumentIcon className="h-3.5 w-3.5" />
+          <ClipboardDocumentIcon className="size-3.5" />
         )}
         {copied ? "Copied" : "Copy"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -114,8 +114,8 @@ function CopyTranId({ tranId }: { tranId: string }) {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="text-slate-400">{label}</span>
-      <span className="font-medium text-slate-100">{value}</span>
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-foreground">{value}</span>
     </div>
   );
 }
@@ -136,8 +136,8 @@ const views: Record<
     title: "Subscription activated",
     description: "Your payment was confirmed by the bank and your plan is live.",
     icon: CheckCircleIcon,
-    accent: "text-emerald-400",
-    ring: "border-emerald-500/20 bg-emerald-500/10",
+    accent: "text-blue-700",
+    ring: "border-blue-600/20 bg-blue-50",
   },
   cancelled: {
     eyebrow: "No charge made",
@@ -145,8 +145,8 @@ const views: Record<
     description:
       "The payment was cancelled or could not be confirmed. Nothing was deducted from your account.",
     icon: XCircleIcon,
-    accent: "text-amber-400",
-    ring: "border-amber-500/20 bg-amber-500/10",
+    accent: "text-indigo-700",
+    ring: "border-indigo-600/20 bg-indigo-50",
   },
   pending: {
     eyebrow: "Awaiting bank confirmation",
@@ -154,8 +154,8 @@ const views: Record<
     description:
       "The bank is still confirming this transaction. This usually settles within a few minutes.",
     icon: ClockIcon,
-    accent: "text-sky-400",
-    ring: "border-sky-500/20 bg-sky-500/10",
+    accent: "text-sky-700",
+    ring: "border-sky-600/20 bg-sky-50",
   },
 };
 
@@ -264,206 +264,181 @@ function PaymentResultInner({ kind }: { kind: ResultKind }) {
     view === "loading" || view === "unknown" ? null : views[view];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="absolute -right-40 top-1/3 h-[32rem] w-[32rem] rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.07)_1px,transparent_1px)] bg-[size:56px_56px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/60 to-slate-950" />
-      </div>
-
-      <div className="relative mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10 sm:px-6">
-        <div className="w-full rounded-3xl border border-slate-800/80 bg-slate-900/70 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8">
-          {reference && view === "loading" ? (
-            <div className="flex flex-col items-center gap-3 py-10 text-sm text-slate-400">
-              <span className="h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-emerald-400" />
-              Checking your payment...
-            </div>
-          ) : !reference || view === "unknown" ? (
-            <>
-              <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-                Payment not found
-              </div>
-              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-50">
-                We could not find this payment
-              </h1>
-              <p className="mt-2 text-sm leading-6 text-slate-400">
-                This link has no transaction reference, or the payment does not
-                belong to your account. Open your subscription page to check
-                your plan or start a new payment.
-              </p>
-              <div className="mt-6 space-y-3">
-                <Link
-                  href="/business/subscription"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:from-emerald-400 hover:to-cyan-400"
-                >
-                  Go to subscription
-                  <ArrowRightIcon className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/business"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
-                >
-                  <HomeIcon className="h-4 w-4" />
-                  Back to dashboard
-                </Link>
-              </div>
-            </>
-          ) : current ? (
-            <>
-                <div className="flex items-center justify-center">
-                  <span
-                    className={`flex h-16 w-16 items-center justify-center rounded-2xl border ${current.ring}`}
-                  >
-                    <current.icon
-                      className={`h-8 w-8 ${current.accent}`}
-                      aria-hidden="true"
-                    />
-                  </span>
-                </div>
-
-                <div className="mt-5 text-center">
-                  <p
-                    className={`text-xs font-medium uppercase tracking-[0.2em] ${current.accent}`}
-                  >
-                    {current.eyebrow}
-                  </p>
-                  <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-50">
-                    {current.title}
-                  </h1>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">
-                    {current.description}
-                  </p>
-                </div>
-
-                <div className="mt-6 space-y-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-                  {detail.planName && (
-                    <DetailRow label="Plan" value={detail.planName} />
-                  )}
-                  <DetailRow
-                    label="Amount"
-                    value={formatAmount(detail.amount, detail.currency)}
-                  />
-                  {view === "paid" && (
-                    <DetailRow
-                      label="Valid until"
-                      value={formatDate(detail.periodTo)}
-                    />
-                  )}
-                  {view === "cancelled" && detail.status && (
-                    <DetailRow
-                      label="Status"
-                      value={detail.status === "review" ? "Under review" : "Not paid"}
-                    />
-                  )}
-                </div>
-
-                {reference && (
-                  <div className="mt-4">
-                    <CopyTranId tranId={reference} />
-                  </div>
-                )}
-
-                {view === "pending" ? (
-                  <div className="mt-6 space-y-3">
-                    <button
-                      type="button"
-                      onClick={check}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:from-emerald-400 hover:to-cyan-400"
-                    >
-                      Check status again
-                    </button>
-                    <Link
-                      href="/business/subscription"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
-                    >
-                      Back to subscription
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="mt-6 space-y-3">
-                    <Link
-                      href="/business"
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:from-emerald-400 hover:to-cyan-400"
-                    >
-                      <HomeIcon className="h-4 w-4" />
-                      {view === "paid"
-                        ? "Go to dashboard"
-                        : "Back to dashboard"}
-                    </Link>
-
-                    {view === "cancelled" && (
-                      <Link
-                        href="/business/subscription"
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-emerald-500/50 hover:text-emerald-300"
-                      >
-                        Try payment again
-                        <ArrowRightIcon className="h-4 w-4" />
-                      </Link>
-                    )}
-                  </div>
-                )}
-
-                {(view === "paid" || view === "cancelled") && (
-                  <div className="mt-5 flex items-center justify-center gap-3 text-xs text-slate-500">
-                    {autoRedirect ? (
-                      <>
-                        <span>
-                          {popup
-                            ? `Closing in ${secondsLeft}s`
-                            : `Returning to dashboard in ${secondsLeft}s`}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setAutoRedirect(false)}
-                          className="font-medium text-slate-400 underline-offset-2 transition hover:text-emerald-400 hover:underline"
-                        >
-                          Stay
-                        </button>
-                      </>
-                    ) : (
-                      <span>Automatic redirect paused</span>
-                    )}
-                  </div>
-                )}
-
-                <div className="mt-6 flex items-center gap-3 text-[11px] text-slate-500">
-                  <span className="h-px flex-1 bg-slate-800" />
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheckIcon className="h-3.5 w-3.5 text-emerald-500" />
-                    Verified with the bank
-                  </span>
-                  <span className="h-px flex-1 bg-slate-800" />
-                </div>
-
-                {view === "cancelled" && (
-                  <p className="mt-4 flex items-start gap-2 text-[11px] leading-5 text-slate-500">
-                    <ExclamationCircleIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" />
-                    Money already deducted? Keep this transaction ID and contact
-                    support — payments are reconciled automatically.
-                  </p>
-                )}
-            </>
-          ) : null}
+    <AuthShell>
+      {reference && view === "loading" ? (
+        <div className="flex flex-col items-center gap-3 py-10 text-sm text-muted-foreground">
+          <span className="size-8 animate-spin rounded-full border-2 border-border border-t-primary" />
+          Checking your payment...
         </div>
-      </div>
-    </div>
+      ) : !reference || view === "unknown" ? (
+        <>
+          <div className="mt-6">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              Payment not found
+            </p>
+            <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+              We could not find this payment
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              This link has no transaction reference, or the payment does not
+              belong to your account. Open your subscription page to check
+              your plan or start a new payment.
+            </p>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            <Button asChild size="lg" className="w-full gap-2">
+              <Link href="/business/subscription">
+                Go to subscription
+                <ArrowRightIcon className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full gap-2">
+              <Link href="/business">
+                <HomeIcon className="size-4" />
+                Back to dashboard
+              </Link>
+            </Button>
+          </div>
+        </>
+      ) : current ? (
+        <>
+          <div className="mt-6 flex items-center justify-center">
+            <span
+              className={`flex size-16 items-center justify-center rounded-2xl border ${current.ring}`}
+            >
+              <current.icon
+                className={`size-8 ${current.accent}`}
+                aria-hidden="true"
+              />
+            </span>
+          </div>
+
+          <div className="mt-5 text-center">
+            <p
+              className={`text-xs font-medium uppercase tracking-[0.2em] ${current.accent}`}
+            >
+              {current.eyebrow}
+            </p>
+            <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+              {current.title}
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {current.description}
+            </p>
+          </div>
+
+          <div className="mt-6 space-y-3 rounded-2xl border border-border bg-muted/70 p-4">
+            {detail.planName && (
+              <DetailRow label="Plan" value={detail.planName} />
+            )}
+            <DetailRow
+              label="Amount"
+              value={formatAmount(detail.amount, detail.currency)}
+            />
+            {view === "paid" && (
+              <DetailRow
+                label="Valid until"
+                value={formatDate(detail.periodTo)}
+              />
+            )}
+            {view === "cancelled" && detail.status && (
+              <DetailRow
+                label="Status"
+                value={detail.status === "review" ? "Under review" : "Not paid"}
+              />
+            )}
+          </div>
+
+          {reference && (
+            <div className="mt-4">
+              <CopyTranId tranId={reference} />
+            </div>
+          )}
+
+          {view === "pending" ? (
+            <div className="mt-6 space-y-3">
+              <Button size="lg" className="w-full" onClick={check}>
+                Check status again
+              </Button>
+              <Button asChild variant="outline" size="lg" className="w-full">
+                <Link href="/business/subscription">Back to subscription</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-3">
+              <Button asChild size="lg" className="w-full gap-2">
+                <Link href="/business">
+                  <HomeIcon className="size-4" />
+                  {view === "paid" ? "Go to dashboard" : "Back to dashboard"}
+                </Link>
+              </Button>
+
+              {view === "cancelled" && (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="w-full gap-2"
+                >
+                  <Link href="/business/subscription">
+                    Try payment again
+                    <ArrowRightIcon className="size-4" />
+                  </Link>
+                </Button>
+              )}
+            </div>
+          )}
+
+          {(view === "paid" || view === "cancelled") && (
+            <div className="mt-5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+              {autoRedirect ? (
+                <>
+                  <span>
+                    {popup
+                      ? `Closing in ${secondsLeft}s`
+                      : `Returning to dashboard in ${secondsLeft}s`}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => setAutoRedirect(false)}
+                    className="h-auto p-0 text-xs text-foreground underline-offset-2 hover:underline"
+                  >
+                    Stay
+                  </Button>
+                </>
+              ) : (
+                <span>Automatic redirect paused</span>
+              )}
+            </div>
+          )}
+
+          <div className="mt-6 flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            <span className="flex items-center gap-1.5">
+              <ShieldCheckIcon className="size-3.5 text-primary" />
+              Verified with the bank
+            </span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
+          {view === "cancelled" && (
+            <p className="mt-4 flex items-start gap-2 text-[11px] leading-5 text-muted-foreground">
+              <ExclamationCircleIcon className="mt-0.5 size-3.5 shrink-0 text-indigo-600" />
+              Money already deducted? Keep this transaction ID and contact
+              support — payments are reconciled automatically.
+            </p>
+          )}
+        </>
+      ) : null}
+    </AuthShell>
   );
 }
 
 export function PaymentResult({ kind }: { kind: ResultKind }) {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-950">
-          <div className="flex flex-col items-center gap-3 text-sm text-slate-400">
-            <span className="h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-emerald-400" />
-            Loading...
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<AuthSplash />}>
       <PaymentResultInner kind={kind} />
     </Suspense>
   );

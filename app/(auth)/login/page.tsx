@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Login | Invoice SaaS",
-  description: "Sign in to your Invoice SaaS account.",
+  title: "Login | Invento Manager",
+  description: "Sign in to your Invento Manager account.",
 };
 
 export default function LoginPage() {

@@ -3,7 +3,7 @@ import { BusinessGuard } from "@/components/business/BusinessGuard";
 import { PaymentResult } from "@/components/business/PaymentResult";
 
 export const metadata: Metadata = {
-  title: "Payment not completed | Invoice SaaS",
+  title: "Payment not completed | Invento Manager",
   description: "This subscription payment was cancelled or not confirmed.",
 };
 

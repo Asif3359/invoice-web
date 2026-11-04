@@ -92,7 +92,7 @@ export function OtpInput({ value, onChange, disabled }: OtpInputProps) {
           onPaste={handlePaste}
           onFocus={(event) => event.target.select()}
           aria-label={`Digit ${index + 1} of ${LENGTH}`}
-          className="h-12 w-full rounded-xl border border-slate-700/80 bg-slate-950/60 text-center text-lg font-semibold text-slate-50 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-60 sm:h-14"
+          className="h-12 w-full min-w-0 rounded-xl border border-input bg-background text-center text-lg font-semibold text-foreground shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-60 sm:h-14"
         />
       ))}
     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ErrorState } from "@/components/admin/ErrorState";
 import { Loading } from "@/components/admin/Loading";
-import { Table } from "@/components/admin/Table";
+import { DataTable } from "@/components/DataTable";
 import { api } from "@/lib/api-client";
 
 interface PermissionRow {
@@ -83,10 +83,10 @@ export default function PermissionsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold text-slate-50">
+      <h1 className="text-2xl font-semibold text-foreground">
         Sub-user Permissions
       </h1>
-      <Table
+      <DataTable
         columns={[
           { key: "email", header: "Sub-user Email" },
           { key: "fullName", header: "Name" },

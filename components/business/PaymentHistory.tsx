@@ -2,20 +2,23 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Loading } from "@/components/admin/Loading";
+import { PaymentStatusBadge, StatusAlert } from "@/components/status";
 import {
   fetchMyPayments,
   paymentErrorMessage,
   type PaymentRecord,
-  type PaymentStatus,
 } from "@/lib/subscription-payments";
-
-const statusStyles: Record<PaymentStatus, string> = {
-  pending: "bg-amber-500/10 text-amber-300",
-  paid: "bg-emerald-500/10 text-emerald-300",
-  failed: "bg-rose-500/10 text-rose-300",
-  cancelled: "bg-slate-700/40 text-slate-300",
-  review: "bg-sky-500/10 text-sky-300",
-};
 
 function formatDate(value?: string | null) {
   if (!value) return "—";
@@ -31,7 +34,11 @@ function formatAmount(amount: number, currency: string) {
   return currency === "BDT" ? `৳${value}` : `${currency} ${value}`;
 }
 
-export function PaymentHistory({ showHeading = true }: { showHeading?: boolean }) {
+export function PaymentHistory({
+  showHeading = true,
+}: {
+  showHeading?: boolean;
+}) {
   const [payments, setPayments] = useState<PaymentRecord[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,115 +61,132 @@ export function PaymentHistory({ showHeading = true }: { showHeading?: boolean }
   }, [load]);
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {showHeading ? (
-          <h2 className="text-lg font-semibold text-slate-100">
-            Payment history
-          </h2>
-        ) : (
-          <span />
-        )}
-        <button
-          type="button"
-          onClick={load}
-          disabled={loading}
-          className="inline-flex items-center gap-2 rounded-md border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <ArrowPathIcon
-            className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
-          />
-          {loading ? "Refreshing..." : "Refresh"}
-        </button>
+    <Card className="gap-0 py-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+        <CardTitle className={showHeading ? undefined : "sr-only"}>
+          Payment history
+        </CardTitle>
+        <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+          <ArrowPathIcon className={loading ? "animate-spin" : undefined} />
+          {loading ? "Refreshing…" : "Refresh"}
+        </Button>
       </div>
 
-      {loading && !payments && (
-        <p className="mt-4 text-sm text-slate-400">
-          Loading payment history...
-        </p>
-      )}
+      <CardContent className="space-y-4 px-4 py-4 sm:px-6 sm:py-5">
+        {loading && !payments && <Loading />}
 
-      {error && (
-        <div className="mt-4 text-sm">
-          <p className="text-rose-300">{error}</p>
-          <button
-            type="button"
-            onClick={load}
-            className="mt-3 rounded-md border border-slate-700 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800"
-          >
-            Try again
-          </button>
-        </div>
-      )}
+        {error && (
+          <div className="space-y-3">
+            <StatusAlert tone="failed">{error}</StatusAlert>
+            <Button variant="outline" size="sm" onClick={load}>
+              Try again
+            </Button>
+          </div>
+        )}
 
-      {!error && payments && payments.length === 0 && (
-        <p className="mt-4 text-sm text-slate-400">
-          No payments yet. Your subscription payments will appear here.
-        </p>
-      )}
+        {!error && payments?.length === 0 && (
+          <p className="py-4 text-sm text-muted-foreground">
+            No payments yet. Your subscription payments will appear here.
+          </p>
+        )}
 
-      {!error && payments && payments.length > 0 && (
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-800 text-sm">
-            <thead>
-              <tr>
-                {[
-                  "Date",
-                  "Plan",
-                  "Amount",
-                  "Status",
-                  "Period",
-                  "Transaction",
-                ].map((header) => (
-                  <th
-                    key={header}
-                    className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-slate-500"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800">
+        {!error && payments && payments.length > 0 && (
+          <>
+            <ul className="space-y-3 sm:hidden">
               {payments.map((payment) => (
-                <tr key={payment._id}>
-                  <td className="whitespace-nowrap px-3 py-3 text-xs text-slate-200">
-                    {formatDate(payment.paidAt ?? payment.createdAt)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-xs text-slate-100">
-                    {payment.planSnapshot?.name ?? "—"}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-xs font-medium text-slate-50">
-                    {formatAmount(payment.amount, payment.currency)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${
-                        statusStyles[payment.status] ??
-                        "bg-slate-800 text-slate-300"
-                      }`}
-                    >
-                      {payment.status}
-                    </span>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-xs text-slate-400">
-                    {payment.periodFrom && payment.periodTo
-                      ? `${formatDate(payment.periodFrom)} – ${formatDate(
-                          payment.periodTo,
-                        )}`
-                      : "—"}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <span className="font-mono text-[11px] text-slate-400">
-                      {payment.tranId}
-                    </span>
-                  </td>
-                </tr>
+                <li
+                  key={payment._id}
+                  className="rounded-xl border border-border bg-card p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-card-foreground">
+                        {payment.planSnapshot?.name ?? "—"}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {formatDate(payment.paidAt ?? payment.createdAt)}
+                      </p>
+                    </div>
+                    <PaymentStatusBadge
+                      status={payment.status}
+                      className="shrink-0"
+                    />
+                  </div>
+                  <dl className="mt-3 space-y-1.5 text-xs">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-muted-foreground">Amount</dt>
+                      <dd className="font-medium">
+                        {formatAmount(payment.amount, payment.currency)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">Period</dt>
+                      <dd className="min-w-0 break-words text-right">
+                        {payment.periodFrom && payment.periodTo
+                          ? `${formatDate(payment.periodFrom)} – ${formatDate(
+                              payment.periodTo,
+                            )}`
+                          : "—"}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="shrink-0 text-muted-foreground">
+                        Transaction
+                      </dt>
+                      <dd className="min-w-0 break-all text-right font-mono text-[11px] text-muted-foreground">
+                        {payment.tranId}
+                      </dd>
+                    </div>
+                  </dl>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
+            </ul>
+
+            <div className="hidden overflow-x-auto sm:block">
+              <Table className="min-w-[46rem]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Plan</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Period</TableHead>
+                    <TableHead>Transaction</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {payments.map((payment) => (
+                    <TableRow key={payment._id}>
+                      <TableCell className="text-xs">
+                        {formatDate(payment.paidAt ?? payment.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-xs font-medium">
+                        {payment.planSnapshot?.name ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-xs font-medium">
+                        {formatAmount(payment.amount, payment.currency)}
+                      </TableCell>
+                      <TableCell>
+                        <PaymentStatusBadge status={payment.status} />
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+                        {payment.periodFrom && payment.periodTo
+                          ? `${formatDate(payment.periodFrom)} – ${formatDate(
+                              payment.periodTo,
+                            )}`
+                          : "—"}
+                      </TableCell>
+                      <TableCell className="font-mono text-[11px] text-muted-foreground">
+                        {payment.tranId}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

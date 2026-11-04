@@ -4,11 +4,12 @@ import {
   PolicyPage,
   PolicySection,
 } from "@/components/legal/PolicyPage";
+import { SupportEmail } from "@/components/marketing/SiteContactLinks";
 
 export const metadata: Metadata = {
-  title: "Data Security Policy | Invoice SaaS",
+  title: "Data Security Policy | Invento Manager",
   description:
-    "How Invoice SaaS collects, stores, protects, and retains business and personal data.",
+    "How Invento Manager collects, stores, protects, and retains business and personal data.",
 };
 
 const UPDATED_AT = "October 31, 2026";
@@ -17,12 +18,12 @@ export default function DataSecurityPolicyPage() {
   return (
     <PolicyPage
       title="Data Security Policy"
-      description="This policy explains how Invoice SaaS handles the information you entrust to us, the security controls we use to protect it, and the choices available to you. It applies to our website, web dashboard, any official mobile application we make available, and related services."
+      description="This policy explains how Invento Manager handles the information you entrust to us, the security controls we use to protect it, and the choices available to you. It applies to our website, web dashboard, any official mobile application we make available, and related services."
       updatedAt={UPDATED_AT}
     >
       <PolicySection title="1. Overview">
         <p>
-          Invoice SaaS provides invoicing, payment tracking, expense management,
+          Invento Manager provides invoicing, payment tracking, expense management,
           inventory, reporting, and team access tools for small and growing
           businesses, with a focus on customers in Bangladesh. Protecting your
           business records is central to that service. We aim to apply
@@ -40,7 +41,7 @@ export default function DataSecurityPolicyPage() {
         <PolicyList
           items={[
             "Our public website and marketing pages.",
-            "The Invoice SaaS web dashboard and business workspace.",
+            "The Invento Manager web dashboard and business workspace.",
             "Any official mobile application we make available and any connected integrations.",
             "Support, billing, and account administration channels, including email and WhatsApp.",
           ]}
@@ -187,12 +188,7 @@ export default function DataSecurityPolicyPage() {
       <PolicySection title="12. Contact Us">
         <p>
           Questions about this policy or our security practices can be sent to{" "}
-          <a
-            href="mailto:support@inventomanager.com"
-            className="text-emerald-400 hover:text-emerald-300"
-          >
-            support@inventomanager.com
-          </a>
+          <SupportEmail className="underline-offset-2" />
           . Please include enough detail for us to understand your request.
         </p>
       </PolicySection>

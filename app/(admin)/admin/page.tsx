@@ -80,7 +80,7 @@ export default function AdminOverviewPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-slate-50">System Overview</h1>
+      <h1 className="text-2xl font-semibold text-foreground">System Overview</h1>
       <StatsCards stats={stats} />
     </div>
   );

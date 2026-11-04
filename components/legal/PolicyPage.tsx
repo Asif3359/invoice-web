@@ -16,18 +16,18 @@ export function PolicyPage({
   children,
 }: PolicyPageProps) {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Header />
-      <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-16 sm:px-6 lg:px-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-primary">
           Legal
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-100">{title}</h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <h1 className="mt-2 text-3xl font-bold text-foreground">{title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Last updated: {updatedAt}
         </p>
-        <p className="mt-6 text-sm leading-7 text-slate-400">{description}</p>
-        <div className="mt-10 space-y-10 text-sm leading-7 text-slate-300">
+        <p className="mt-6 text-sm leading-7 text-muted-foreground">{description}</p>
+        <div className="mt-10 space-y-10 text-sm leading-7 text-foreground/90">
           {children}
         </div>
       </main>
@@ -44,7 +44,7 @@ interface PolicySectionProps {
 export function PolicySection({ title, children }: PolicySectionProps) {
   return (
     <section>
-      <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
+      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
       <div className="mt-3 space-y-3">{children}</div>
     </section>
   );

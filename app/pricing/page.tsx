@@ -3,9 +3,11 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { PricingCards } from "@/components/pricing/PricingCards";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Pricing | Invoice SaaS",
+  title: "Pricing | Invento Manager",
   description:
     "Choose the subscription plan that fits your business. Pay securely with bKash, Nagad, card, or bank.",
 };
@@ -19,20 +21,20 @@ const steps = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="flex min-h-dvh flex-col bg-background">
       <Header />
 
-      <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-400">
+          <Badge variant="secondary" className="mb-4 px-4 py-1.5 text-sm font-medium">
             Simple &amp; Affordable
-          </div>
+          </Badge>
 
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Choose your plan
           </h1>
 
-          <p className="mt-4 text-base leading-7 text-slate-400 sm:text-lg">
+          <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
             Every plan includes the full business toolkit — invoices, clients,
             inventory, expenses, reports, and team access.
           </p>
@@ -40,27 +42,23 @@ export default function PricingPage() {
 
         <PricingCards />
 
-        <div className="mx-auto mt-14 grid max-w-4xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-            <h2 className="text-lg font-semibold text-white">
-              How online payment works
-            </h2>
-            <ol className="mt-4 space-y-3 text-sm text-slate-300">
+        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <Card className="gap-0 p-6 shadow-sm">
+            <CardTitle className="text-lg">How online payment works</CardTitle>
+            <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
               {steps.map((step, index) => (
                 <li key={step} className="flex gap-3">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-semibold text-emerald-400">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                     {index + 1}
                   </span>
                   <span>{step}</span>
                 </li>
               ))}
             </ol>
-          </section>
+          </Card>
 
-          <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-sm leading-6 text-slate-400">
-            <h2 className="text-lg font-semibold text-white">
-              Secure checkout
-            </h2>
+          <Card className="gap-0 p-6 text-sm leading-6 text-muted-foreground shadow-sm">
+            <CardTitle className="text-lg">Secure checkout</CardTitle>
             <p className="mt-3">
               Payments are processed by EPS (Easy Payment System). Pay with
               bKash, Nagad, card,
@@ -76,13 +74,13 @@ export default function PricingPage() {
               Refund and cancellation terms are in our{" "}
               <Link
                 href="/return-refund-policy"
-                className="text-slate-300 underline-offset-2 hover:text-white hover:underline"
+                className="text-foreground underline-offset-2 hover:text-primary hover:underline"
               >
                 Return &amp; Refund Policy
               </Link>
               .
             </p>
-          </section>
+          </Card>
         </div>
       </main>
 

@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   fetchPublicPlans,
   paymentErrorMessage,
@@ -75,10 +82,7 @@ export function PricingCards() {
     return (
       <div className="mt-12 grid gap-6 md:grid-cols-3">
         {[0, 1, 2].map((index) => (
-          <div
-            key={index}
-            className="h-80 animate-pulse rounded-3xl border border-slate-800 bg-slate-900/60"
-          />
+          <Skeleton key={index} className="h-80 w-full rounded-3xl" />
         ))}
       </div>
     );
@@ -86,26 +90,28 @@ export function PricingCards() {
 
   if (error) {
     return (
-      <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-center">
-        <ExclamationTriangleIcon className="mx-auto h-8 w-8 text-amber-400" />
-        <p className="mt-3 text-sm text-amber-200">{error}</p>
-        <button
+      <Card className="mx-auto mt-12 max-w-xl items-center gap-0 p-6 text-center">
+        <ExclamationTriangleIcon className="mx-auto size-8 text-primary" />
+        <p className="mt-3 text-sm text-muted-foreground">{error}</p>
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
+          className="mt-4"
           onClick={load}
-          className="mt-4 rounded-lg border border-amber-500/40 px-4 py-2 text-sm font-medium text-amber-100 hover:bg-amber-500/10"
         >
           Try again
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   if (!plans || plans.length === 0) {
     return (
-      <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center text-sm text-slate-400">
+      <Card className="mx-auto mt-12 max-w-xl p-6 text-center text-sm text-muted-foreground">
         No plans are available right now. Please check back soon or contact
         support.
-      </div>
+      </Card>
     );
   }
 
@@ -118,70 +124,69 @@ export function PricingCards() {
         const isBest = plan.id === bestId;
 
         return (
-          <div
+          <Card
             key={plan.id}
-            className={`relative flex flex-col overflow-hidden rounded-3xl border bg-slate-900 p-6 shadow-xl ${
+            className={
               isBest
-                ? "border-emerald-500/60 shadow-emerald-950/40"
-                : "border-slate-800 shadow-black/20"
-            }`}
+                ? "relative gap-0 overflow-hidden rounded-3xl p-6 shadow-lg shadow-primary/10 transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/15"
+                : "relative gap-0 overflow-hidden rounded-3xl p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md"
+            }
           >
             {isBest && (
               <>
-                <div className="absolute inset-x-0 top-0 h-1 bg-emerald-500" />
-                <span className="absolute right-4 top-4 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
-                  Best value
-                </span>
+                <div className="absolute inset-x-0 top-0 h-1 bg-primary" />
+                <Badge className="absolute top-4 right-4">Best value</Badge>
               </>
             )}
 
             <div>
-              <h2 className="text-xl font-bold text-white">{plan.name}</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <h2 className="text-xl font-bold text-foreground">{plan.name}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
                 {plan.description || `${plan.durationDays} days of full access`}
               </p>
             </div>
 
             <div className="mt-6">
               <div className="flex items-end gap-2">
-                <span className="text-4xl font-extrabold tracking-tight text-white">
+                <span className="text-4xl font-extrabold tracking-tight text-foreground">
                   {formatAmount(plan.amount, plan.currency)}
                 </span>
-                <span className="mb-1 text-sm text-slate-400">
+                <span className="mb-1 text-sm text-muted-foreground">
                   / {plan.durationDays} days
                 </span>
               </div>
-              <p className="mt-2 text-sm text-emerald-400">
-                About {formatAmount(Math.round(pricePerMonth(plan)), plan.currency)}{" "}
+              <p className="mt-2 text-sm text-primary">
+                About{" "}
+                {formatAmount(Math.round(pricePerMonth(plan)), plan.currency)}{" "}
                 per month
               </p>
               {savings > 0 && (
-                <span className="mt-2 inline-block rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300">
+                <Badge variant="secondary" className="mt-2">
                   Save {savings}% vs monthly
-                </span>
+                </Badge>
               )}
             </div>
 
-            <ul className="mt-6 flex-1 space-y-3 text-sm text-slate-300">
+            <ul className="mt-6 flex-1 space-y-3 text-sm text-foreground/80">
               {features.map((feature) => (
                 <li key={feature} className="flex items-start gap-2.5">
-                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
                   <span>{feature}</span>
                 </li>
               ))}
             </ul>
 
-            <Link
-              href="/register?next=/business/subscription"
-              className={`mt-6 flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition ${
-                isBest
-                  ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-500"
-                  : "border border-slate-700 bg-slate-950/40 text-slate-100 hover:border-emerald-500/50 hover:text-emerald-300"
-              }`}
+            <Button
+              asChild
+              size="lg"
+              variant={isBest ? "default" : "outline"}
+              className="mt-6 w-full"
             >
-              Choose {plan.name}
-            </Link>
-          </div>
+              <Link href="/register?next=/business/subscription">
+                Choose {plan.name}
+              </Link>
+            </Button>
+          </Card>
         );
       })}
     </div>

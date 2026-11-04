@@ -14,3 +14,10 @@ export function getActiveHref(
     .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
     .sort((a, b) => b.length - a.length)[0];
 }
+
+/** Sidebar / drawer link styling — one active state for every nav surface. */
+export function sidebarLinkClass(active: boolean) {
+  return active
+    ? "block rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground"
+    : "block rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground";
+}

@@ -1,8 +1,12 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
 export function Loading() {
   return (
-    <div className="flex items-center justify-center rounded-xl border border-slate-800 bg-slate-950/40 p-6 text-sm text-slate-400">
-      Loading...
+    <div className="space-y-3" role="status" aria-live="polite">
+      <p className="text-sm text-muted-foreground">Loading…</p>
+      <Skeleton className="h-10 w-full rounded-xl" />
+      <Skeleton className="h-24 w-full rounded-xl" />
+      <Skeleton className="h-24 w-full rounded-xl" />
     </div>
   );
 }
-

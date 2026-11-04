@@ -1,3 +1,5 @@
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
+
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -10,26 +12,18 @@ interface StatsCardsProps {
 
 export function StatsCards({ stats }: StatsCardsProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="rounded-xl border border-slate-800 bg-slate-950/60 p-4"
-        >
-          <div className="text-xs font-medium text-slate-400">
-            {stat.label}
-          </div>
-          <div className="mt-2 text-2xl font-semibold text-slate-50">
-            {stat.value}
-          </div>
+        <Card key={stat.label} className="gap-1.5 p-4 sm:p-5">
+          <CardDescription>{stat.label}</CardDescription>
+          <CardTitle className="text-2xl">{stat.value}</CardTitle>
           {stat.description && (
-            <div className="mt-1 text-xs text-slate-500">
+            <CardContent className="px-0 pt-1 text-xs text-muted-foreground">
               {stat.description}
-            </div>
+            </CardContent>
           )}
-        </div>
+        </Card>
       ))}
     </div>
   );
 }
-

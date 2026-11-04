@@ -2,11 +2,23 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { Table } from "@/components/admin/Table";
+import { DataTable } from "@/components/DataTable";
 import { ErrorState } from "@/components/admin/ErrorState";
 import { Loading } from "@/components/admin/Loading";
+import { StatusAlert, SubscriptionStatusBadge } from "@/components/status";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input, nativeControlClass } from "@/components/ui/input";
 import { api } from "@/lib/api-client";
 import type { AdminRole } from "@/lib/auth";
+import { toast } from "sonner";
 
 interface SystemAdminRow {
   id: string;
@@ -38,14 +50,10 @@ type ApiErrorData = {
 
 const roleOptions: AdminRole[] = ["superadmin", "admin", "manager"];
 
-const inputClassName =
-  "mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25";
-
 export default function SystemUsersPage() {
   const [users, setUsers] = useState<SystemAdminRow[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [formFullName, setFormFullName] = useState("");
   const [formEmail, setFormEmail] = useState("");
@@ -90,13 +98,7 @@ export default function SystemUsersPage() {
     setFormConfirm("");
     setFormRole("superadmin");
     setFormError(null);
-    setNotice(null);
     setShowCreate(true);
-  }
-
-  function closeCreate() {
-    if (creating) return;
-    setShowCreate(false);
   }
 
   async function handleCreate(event: FormEvent) {
@@ -118,8 +120,8 @@ export default function SystemUsersPage() {
         role: formRole,
       });
       setShowCreate(false);
-      setNotice(
-        `System admin ${formEmail} created successfully. They can sign in at the normal login page.`,
+      toast.success(
+        `System admin ${formEmail} created. They can sign in at the normal login page.`,
       );
       await load();
     } catch (err) {
@@ -146,151 +148,141 @@ export default function SystemUsersPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-50">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold text-foreground">
             System Admins
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Create additional superadmins or limited admin accounts.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openCreate}
-          className="rounded-md bg-emerald-500 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-emerald-400"
-        >
-          Add system admin
-        </button>
+        <Button onClick={openCreate}>Add system admin</Button>
       </div>
 
-      {notice && (
-        <p
-          role="status"
-          className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200"
-        >
-          {notice}
-        </p>
-      )}
-
-      {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-950 p-5 shadow-2xl">
-            <h2 className="text-lg font-semibold text-slate-50">
-              Add system admin
-            </h2>
-            <p className="mt-1 text-xs text-slate-400">
+      <Dialog
+        open={showCreate}
+        onOpenChange={(open) => !open && !creating && setShowCreate(false)}
+      >
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add system admin</DialogTitle>
+            <DialogDescription>
               The new account signs in with the normal login page and completes
               an email one-time code.
+            </DialogDescription>
+          </DialogHeader>
+
+          {formError && <StatusAlert tone="failed">{formError}</StatusAlert>}
+
+          <form onSubmit={handleCreate} className="space-y-3">
+            <div className="space-y-1.5">
+              <label htmlFor="admin-full-name" className="text-sm text-foreground">
+                Full name
+              </label>
+              <Input
+                id="admin-full-name"
+                type="text"
+                value={formFullName}
+                onChange={(event) => setFormFullName(event.target.value)}
+                minLength={2}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="admin-email" className="text-sm text-foreground">
+                Email
+              </label>
+              <Input
+                id="admin-email"
+                type="email"
+                autoComplete="email"
+                value={formEmail}
+                onChange={(event) => setFormEmail(event.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="admin-password" className="text-sm text-foreground">
+                Password
+              </label>
+              <Input
+                id="admin-password"
+                type="password"
+                autoComplete="new-password"
+                value={formPassword}
+                onChange={(event) => setFormPassword(event.target.value)}
+                minLength={8}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="admin-confirm" className="text-sm text-foreground">
+                Confirm password
+              </label>
+              <Input
+                id="admin-confirm"
+                type="password"
+                autoComplete="new-password"
+                value={formConfirm}
+                onChange={(event) => setFormConfirm(event.target.value)}
+                minLength={8}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="admin-role" className="text-sm text-foreground">
+                Role
+              </label>
+              <select
+                id="admin-role"
+                value={formRole}
+                onChange={(event) =>
+                  setFormRole(event.target.value as AdminRole)
+                }
+                className={nativeControlClass}
+              >
+                {roleOptions.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              At least 8 characters with an uppercase letter, a lowercase letter
+              and a number.
             </p>
 
-            {formError && (
-              <p
-                role="alert"
-                className="mt-3 rounded-md border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreate(false)}
+                disabled={creating}
               >
-                {formError}
-              </p>
-            )}
+                Cancel
+              </Button>
+              <Button type="submit" disabled={creating}>
+                {creating ? "Creating..." : "Create admin"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-            <form onSubmit={handleCreate} className="mt-4 space-y-3">
-              <label className="block text-sm text-slate-300">
-                Full name
-                <input
-                  type="text"
-                  value={formFullName}
-                  onChange={(event) => setFormFullName(event.target.value)}
-                  minLength={2}
-                  required
-                  className={inputClassName}
-                />
-              </label>
-              <label className="block text-sm text-slate-300">
-                Email
-                <input
-                  type="email"
-                  autoComplete="email"
-                  value={formEmail}
-                  onChange={(event) => setFormEmail(event.target.value)}
-                  required
-                  className={inputClassName}
-                />
-              </label>
-              <label className="block text-sm text-slate-300">
-                Password
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  value={formPassword}
-                  onChange={(event) => setFormPassword(event.target.value)}
-                  minLength={8}
-                  required
-                  className={inputClassName}
-                />
-              </label>
-              <label className="block text-sm text-slate-300">
-                Confirm password
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  value={formConfirm}
-                  onChange={(event) => setFormConfirm(event.target.value)}
-                  minLength={8}
-                  required
-                  className={inputClassName}
-                />
-              </label>
-              <label className="block text-sm text-slate-300">
-                Role
-                <select
-                  value={formRole}
-                  onChange={(event) =>
-                    setFormRole(event.target.value as AdminRole)
-                  }
-                  className={inputClassName}
-                >
-                  {roleOptions.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <p className="text-xs text-slate-500">
-                At least 8 characters with an uppercase letter, a lowercase
-                letter and a number.
-              </p>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={closeCreate}
-                  disabled={creating}
-                  className="rounded-md border border-slate-700 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="rounded-md bg-emerald-500 px-3 py-2 text-sm font-medium text-slate-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {creating ? "Creating..." : "Create admin"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      <Table
+      <DataTable
         columns={[
           { key: "email", header: "Email" },
-          { key: "fullName", header: "Name" },
+          { key: "fullName", header: "Name", hideOnMobile: true },
           { key: "role", header: "Role" },
           {
             key: "isActive",
             header: "Status",
-            render: (row) => (row.isActive ? "Active" : "Inactive"),
+            render: (row) => (
+              <SubscriptionStatusBadge
+                status={row.isActive ? "active" : "inactive"}
+              />
+            ),
           },
         ]}
         data={users}

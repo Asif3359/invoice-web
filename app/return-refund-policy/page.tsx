@@ -4,11 +4,12 @@ import {
   PolicyPage,
   PolicySection,
 } from "@/components/legal/PolicyPage";
+import { SupportEmail } from "@/components/marketing/SiteContactLinks";
 
 export const metadata: Metadata = {
-  title: "Return & Refund Policy | Invoice SaaS",
+  title: "Return & Refund Policy | Invento Manager",
   description:
-    "Billing, renewal, cancellation, and refund terms for Invoice SaaS subscriptions paid online through EPS.",
+    "Billing, renewal, cancellation, and refund terms for Invento Manager subscriptions paid online through EPS.",
 };
 
 const UPDATED_AT = "October 31, 2026";
@@ -17,12 +18,12 @@ export default function ReturnRefundPolicyPage() {
   return (
     <PolicyPage
       title="Return & Refund Policy"
-      description="This policy explains how subscription payments, renewals, cancellations, and refunds work for Invoice SaaS. It applies to subscriptions purchased directly from us through our website or sales channels."
+      description="This policy explains how subscription payments, renewals, cancellations, and refunds work for Invento Manager. It applies to subscriptions purchased directly from us through our website or sales channels."
       updatedAt={UPDATED_AT}
     >
       <PolicySection title="1. Overview">
         <p>
-          Invoice SaaS is a subscription-based software service. You pay for
+          Invento Manager is a subscription-based software service. You pay for
           access to the platform for a defined period. Because the service is
           delivered digitally and access is made available immediately after
           activation, there is no physical product to return. This policy
@@ -39,7 +40,7 @@ export default function ReturnRefundPolicyPage() {
       <PolicySection title="2. Plan and Pricing">
         <PolicyList
           items={[
-            "Invoice SaaS Premium is currently offered as a single plan at ৳499 per month, payable in Bangladeshi Taka (BDT).",
+            "Invento Manager Premium is currently offered as a single plan at ৳499 per month, payable in Bangladeshi Taka (BDT).",
             "The price, included features, and billing period are shown on our pricing page and are confirmed with you before payment.",
             "Subscription periods are prepaid. Access is granted for the period you paid for, not for an indefinite time.",
             "We may change prices or plan features in the future. Changes apply to future subscription periods and do not reduce access you have already paid for.",
@@ -154,12 +155,7 @@ export default function ReturnRefundPolicyPage() {
       <PolicySection title="10. How to Request a Refund">
         <p>
           Email{" "}
-          <a
-            href="mailto:support@inventomanager.com"
-            className="text-emerald-400 hover:text-emerald-300"
-          >
-            support@inventomanager.com
-          </a>{" "}
+          <SupportEmail className="underline-offset-2" />{" "}
           with the subject line &quot;Refund Request&quot;, or message us on
           our support channels, and include:
         </p>
@@ -211,12 +207,7 @@ export default function ReturnRefundPolicyPage() {
       <PolicySection title="14. Contact Us">
         <p>
           For billing questions or refund requests, email{" "}
-          <a
-            href="mailto:support@inventomanager.com"
-            className="text-emerald-400 hover:text-emerald-300"
-          >
-            support@inventomanager.com
-          </a>{" "}
+          <SupportEmail className="underline-offset-2" />{" "}
           or contact us through the support channels listed on our website.
           Include your account email and transaction reference so we can help
           you faster.

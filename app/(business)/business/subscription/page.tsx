@@ -1,12 +1,23 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowPathIcon,
-  ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useBusinessUser } from "@/components/business/BusinessGuard";
-import type { SubscriptionStatus } from "@/lib/business-auth";
+import {
+  StatusAlert,
+  SubscriptionStatusBadge,
+  TrialBadge,
+} from "@/components/status";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   clearPendingPayment,
   createCheckout,
@@ -26,25 +37,12 @@ const TERMINAL_STATUSES: PaymentStatus[] = [
   "review",
 ];
 
-const statusStyles: Record<SubscriptionStatus, string> = {
-  active: "bg-emerald-500/10 text-emerald-400",
-  expired: "bg-amber-500/10 text-amber-400",
-  not_started: "bg-sky-500/10 text-sky-400",
-  inactive: "bg-rose-500/10 text-rose-400",
-};
-
 type NoticeTone = "success" | "error" | "info";
 
 interface Notice {
   tone: NoticeTone;
   text: string;
 }
-
-const noticeStyles: Record<NoticeTone, string> = {
-  success: "text-emerald-300",
-  error: "text-rose-300",
-  info: "text-slate-300",
-};
 
 function formatDate(value?: string | null) {
   if (!value) return "—";
@@ -53,11 +51,6 @@ function formatDate(value?: string | null) {
     month: "short",
     day: "numeric",
   });
-}
-
-function formatStatus(status?: SubscriptionStatus) {
-  if (!status) return "Unknown";
-  return status.replace("_", " ");
 }
 
 function formatAmount(amount: number, currency: string) {
@@ -338,211 +331,190 @@ export default function BusinessSubscriptionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-50">Subscription</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-2xl font-semibold text-foreground">Subscription</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Your current plan, renewal date, and payment options.
         </p>
       </div>
 
       {(isExpired || endsSoon) && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
-          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
-          <p>
-            {isExpired
-              ? "Your subscription has expired. Pay below to keep creating invoices, recording payments, and syncing data."
-              : `Your subscription ends on ${formatDate(subscription?.activeUntil)} (${subscription?.daysLeft} day(s) left). Pay now to avoid interruption.`}
-          </p>
-        </div>
+        <StatusAlert tone="failed">
+          {isExpired
+            ? "Your subscription has expired. Pay below to keep creating invoices, recording payments, and syncing data."
+            : `Your subscription ends on ${formatDate(subscription?.activeUntil)} (${subscription?.daysLeft} day(s) left). Pay now to avoid interruption.`}
+        </StatusAlert>
       )}
 
       {notice && (
-        <p role="status" className={`text-sm ${noticeStyles[notice.tone]}`}>
+        <StatusAlert tone={notice.tone === "error" ? "failed" : notice.tone}>
           {notice.text}
-        </p>
+        </StatusAlert>
       )}
 
-      <section className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-slate-100">
-            Current plan
-          </h2>
-          <div className="flex items-center gap-2">
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
-                status ? statusStyles[status] : "bg-slate-800 text-slate-300"
-              }`}
-            >
-              {formatStatus(status)}
-            </span>
-            {subscription?.isTrial && (
-              <span className="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs text-sky-400">
-                Trial
-              </span>
-            )}
-          </div>
-        </div>
+      <Card className="gap-4 py-5 sm:py-6">
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle className="text-lg">Current plan</CardTitle>
+          <CardAction className="flex items-center gap-2">
+            <SubscriptionStatusBadge status={status} />
+            {subscription?.isTrial && <TrialBadge />}
+          </CardAction>
+        </CardHeader>
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="grid gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
           <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Plan
             </div>
-            <div className="mt-1 text-sm text-slate-100">Premium</div>
+            <div className="mt-1 text-sm text-foreground">Premium</div>
           </div>
           <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Period starts
             </div>
-            <div className="mt-1 text-sm text-slate-100">
+            <div className="mt-1 text-sm text-foreground">
               {formatDate(subscription?.activeFrom)}
             </div>
           </div>
           <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Period ends
             </div>
-            <div className="mt-1 text-sm text-slate-100">
+            <div className="mt-1 text-sm text-foreground">
               {formatDate(subscription?.activeUntil)}
             </div>
           </div>
           <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Days left
             </div>
-            <div className="mt-1 text-sm text-slate-100">
+            <div className="mt-1 text-sm text-foreground">
               {status === "active"
                 ? (subscription?.daysLeft ?? 0)
                 : "—"}
             </div>
           </div>
-        </div>
+        </CardContent>
 
-        <div className="mt-5 border-t border-slate-800 pt-4">
-          <button
-            type="button"
-            onClick={checkActivation}
-            disabled={checking}
-            className="inline-flex items-center gap-2 rounded-md border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+        <CardFooter className="flex-col items-start gap-2 border-t border-border px-4 sm:px-6">
+          <Button variant="outline" onClick={checkActivation} disabled={checking}>
             <ArrowPathIcon
               className={`h-4 w-4 ${checking ? "animate-spin" : ""}`}
             />
             {checking ? "Checking..." : "Check activation status"}
-          </button>
+          </Button>
           {pendingTranId && (
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Pending payment: {pendingTranId}
             </p>
           )}
-        </div>
-      </section>
+        </CardFooter>
+      </Card>
 
-      <section className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-        <h2 className="text-lg font-semibold text-slate-100">
-          Choose a plan
-        </h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Pay securely with bKash, Nagad, card, or bank through EPS. If
-          you pay before your current period ends, the new days are added after
-          your current end date.
-        </p>
+      <Card className="gap-4 py-5 sm:py-6">
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle className="text-lg">Choose a plan</CardTitle>
+          <CardDescription>
+            Pay securely with bKash, Nagad, card, or bank through EPS. If
+            you pay before your current period ends, the new days are added after
+            your current end date.
+          </CardDescription>
+        </CardHeader>
 
-        {plansLoading && (
-          <p className="mt-4 text-sm text-slate-400">Loading plans...</p>
-        )}
+        <CardContent className="space-y-4 px-4 sm:px-6">
+          {plansLoading && (
+            <p className="text-sm text-muted-foreground">Loading plans...</p>
+          )}
 
-        {!plansLoading && plansError && (
-          <div className="mt-4">
-            <p className="text-sm text-rose-300">{plansError}</p>
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="mt-3 rounded-md border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
-            >
-              Try again
-            </button>
-          </div>
-        )}
+          {!plansLoading && plansError && (
+            <div className="space-y-3">
+              <StatusAlert tone="failed">{plansError}</StatusAlert>
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Try again
+              </Button>
+            </div>
+          )}
 
-        {!plansLoading && !plansError && plans.length === 0 && (
-          <p className="mt-4 text-sm text-slate-400">
-            No plans are available right now. Please try again later or contact
-            support.
-          </p>
-        )}
+          {!plansLoading && !plansError && plans.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No plans are available right now. Please try again later or contact
+              support.
+            </p>
+          )}
 
-        <div className="mt-4 space-y-3">
-          {plans.map((plan) => {
-            const active = plan.id === selectedPlanId;
-            return (
-              <label
-                key={plan.id}
-                className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
-                  active
-                    ? "border-emerald-500 bg-emerald-500/5"
-                    : "border-slate-800 bg-slate-950/40 hover:border-slate-700"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="plan"
-                  value={plan.id}
-                  checked={active}
-                  onChange={() => setSelectedPlanId(plan.id)}
-                  className="sr-only"
-                />
-                <span
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                    active ? "border-emerald-400" : "border-slate-600"
+          <div className="space-y-3">
+            {plans.map((plan) => {
+              const active = plan.id === selectedPlanId;
+              return (
+                <label
+                  key={plan.id}
+                  className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition ${
+                    active
+                      ? "border-primary bg-primary/5"
+                      : "border-border bg-muted/40 hover:border-input"
                   }`}
-                  aria-hidden="true"
                 >
-                  {active && (
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  )}
-                </span>
-                <span className="flex-1">
-                  <span className="block text-sm font-semibold text-slate-100">
-                    {plan.name}
+                  <input
+                    type="radio"
+                    name="plan"
+                    value={plan.id}
+                    checked={active}
+                    onChange={() => setSelectedPlanId(plan.id)}
+                    className="sr-only"
+                  />
+                  <span
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
+                      active ? "border-primary" : "border-input"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {active && (
+                      <span className="h-2 w-2 rounded-full bg-primary" />
+                    )}
                   </span>
-                  <span className="mt-0.5 block text-xs text-slate-400">
-                    {plan.durationDays} days
-                    {plan.description ? ` · ${plan.description}` : ""}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-foreground">
+                      {plan.name}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {plan.durationDays} days
+                      {plan.description ? ` · ${plan.description}` : ""}
+                    </span>
                   </span>
-                </span>
-                <span className="text-right">
-                  <span className="block text-base font-bold text-slate-50">
-                    {formatAmount(plan.amount, plan.currency)}
+                  <span className="shrink-0 text-right">
+                    <span className="block text-base font-bold text-foreground">
+                      {formatAmount(plan.amount, plan.currency)}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {plan.currency}
+                    </span>
                   </span>
-                  <span className="text-[11px] text-slate-500">
-                    {plan.currency}
-                  </span>
-                </span>
-              </label>
-            );
-          })}
-        </div>
+                </label>
+              );
+            })}
+          </div>
 
-        {selectedPlan && (
-          <button
-            type="button"
-            onClick={payOnline}
-            disabled={paying}
-            className="mt-5 w-full rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {paying
-              ? "Waiting for payment confirmation..."
-              : `Pay ${formatAmount(selectedPlan.amount, selectedPlan.currency)} online`}
-          </button>
-        )}
+          {selectedPlan && (
+            <div className="flex flex-wrap gap-3">
+              <Button
+                className="w-full"
+                onClick={payOnline}
+                disabled={paying}
+              >
+                {paying
+                  ? "Waiting for payment confirmation..."
+                  : `Pay ${formatAmount(selectedPlan.amount, selectedPlan.currency)} online`}
+              </Button>
+            </div>
+          )}
 
-        <p className="mt-3 text-xs leading-5 text-slate-500">
-          The secure EPS page opens in a new tab. Keep this tab open —
-          we confirm the payment with our server automatically. If the tab
-          closes early, press &quot;Check activation status&quot; above after
-          paying.
-        </p>
-      </section>
+          <p className="text-xs leading-5 text-muted-foreground">
+            The secure EPS page opens in a new tab. Keep this tab open —
+            we confirm the payment with our server automatically. If the tab
+            closes early, press &quot;Check activation status&quot; above after
+            paying.
+          </p>
+        </CardContent>
+      </Card>
 
     </div>
   );

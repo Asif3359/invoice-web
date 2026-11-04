@@ -1,4 +1,5 @@
 import { CheckIcon } from "@heroicons/react/24/outline";
+import { Reveal } from "@/components/marketing/Reveal";
 
 const features = [
   {
@@ -35,36 +36,38 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-16 sm:py-24">
+    <section
+      id="features"
+      className="scroll-mt-16 border-t border-border bg-muted/40 py-16 sm:py-24"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-slate-100 sm:text-4xl">
-            Everything you need to run your business
-          </h2>
-          <p className="mt-4 text-lg text-slate-400">
-            Powerful features designed for modern business owners
-          </p>
-        </div>
-        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 transition hover:border-emerald-500/30 hover:bg-slate-900/60"
-            >
-              <div className="flex items-start gap-4">
-                <div className="rounded-full bg-emerald-500/10 p-2">
-                  <CheckIcon className="h-5 w-5 text-emerald-400" />
+        <Reveal>
+          <div className="text-center">
+            <h2 className="text-balance text-3xl font-bold text-foreground sm:text-4xl">
+              Everything you need to run your business
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+              Powerful features designed for modern business owners
+            </p>
+          </div>
+        </Reveal>
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:mt-12 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {features.map((feature, index) => (
+            <Reveal key={feature.title} className="h-full" delay={index * 80}>
+              <div className="flex h-full items-start gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md sm:p-6">
+                <div className="shrink-0 rounded-full bg-secondary p-2">
+                  <CheckIcon className="size-5 text-primary" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-slate-100">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-foreground">
                     {feature.title}
                   </h3>
-                  <p className="mt-1 text-sm text-slate-400">
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
                     {feature.description}
                   </p>
                 </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

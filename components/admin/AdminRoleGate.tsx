@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { useAdminUser } from "./AdminGuard";
 import type { AdminRole } from "@/lib/auth";
 
@@ -16,6 +17,7 @@ const routeRoles: { prefix: string; roles: AdminRole[] }[] = [
   { prefix: "/admin/users", roles: ["superadmin"] },
   { prefix: "/admin/settings", roles: ["superadmin"] },
   { prefix: "/admin/permissions", roles: ["superadmin", "admin"] },
+  { prefix: "/admin/video-tutorials", roles: ["superadmin", "admin"] },
 ];
 
 export function AdminRoleGate({ children }: { children: ReactNode }) {
@@ -33,17 +35,16 @@ export function AdminRoleGate({ children }: { children: ReactNode }) {
 
   if (rule && !rule.roles.includes(user.role)) {
     return (
-      <div className="rounded-xl border border-amber-900/60 bg-amber-950/30 p-6">
-        <h1 className="text-lg font-semibold text-amber-100">Access denied</h1>
-        <p className="mt-2 text-sm text-amber-200/80">
+      <div className="rounded-xl border border-border bg-card p-4 shadow-sm sm:p-6">
+        <h1 className="text-lg font-semibold text-card-foreground">
+          Access denied
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Your role ({user.role}) does not have permission to view this page.
         </p>
-        <Link
-          href="/admin"
-          className="mt-4 inline-block rounded-md bg-amber-500 px-3 py-2 text-sm font-medium text-slate-950 hover:bg-amber-400"
-        >
-          Back to overview
-        </Link>
+        <Button asChild className="mt-4 w-full sm:w-auto">
+          <Link href="/admin">Back to overview</Link>
+        </Button>
       </div>
     );
   }
